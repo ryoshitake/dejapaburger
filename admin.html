@@ -74,10 +74,29 @@ td.acao{width:44px}
 .msg.err{background:rgba(217,22,28,.14);border:1px solid rgba(217,22,28,.45);color:#ff9095}
 .hint{color:var(--muted);font-size:13px;margin:10px 2px}
 .cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));padding:14px}
-.ped{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ped{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:2px}
 .ped b{color:var(--gold)}
-.ped .tot{float:right;font-weight:700}
+.ped .tot{font-weight:700;font-size:15.5px;color:var(--cream);white-space:nowrap}
 .ped small{display:block;color:var(--muted);margin-top:4px;font-size:13px}
+.ped.novo{border-color:rgba(242,194,48,.5);box-shadow:0 0 0 1px rgba(242,194,48,.18)}
+.ped.feito{opacity:.62}
+.ped .topo{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ped .topo .sp{flex:1}
+.selo{font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.selo.novo{background:rgba(242,194,48,.14);border:1px solid rgba(242,194,48,.5);color:var(--gold)}
+.selo.preparo{background:rgba(255,145,60,.14);border:1px solid rgba(255,145,60,.5);color:#ffab5e}
+.selo.feito{background:rgba(60,203,107,.12);border:1px solid rgba(60,203,107,.45);color:#8ae8ab}
+.selo.cancelado{background:rgba(217,22,28,.14);border:1px solid rgba(217,22,28,.45);color:#ff9095}
+.acoes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-2)}
+.acoes button,.acoes a{flex:1;min-width:104px;height:34px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface-3);color:var(--text);font-weight:600;font-size:13px;text-decoration:none;transition:background .15s,border-color .15s}
+.acoes button:hover{border-color:var(--gold)}
+.acoes .ok{background:rgba(60,203,107,.14);border-color:rgba(60,203,107,.45);color:#8ae8ab}
+.acoes .ok:hover{background:rgba(60,203,107,.22)}
+.acoes .zap{background:rgba(60,203,107,.10);border-color:rgba(60,203,107,.3);color:#8ae8ab;flex:0 0 46px;min-width:46px}
+.acoes button[disabled]{opacity:.5;cursor:progress}
+.filtros{display:flex;gap:6px;flex-wrap:wrap}
+.filtros button{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--muted);font-weight:600;font-size:13px}
+.filtros button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#111}
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px;background:rgba(11,11,11,.95);border-top:1px solid var(--line);display:none}
 .bar.show{display:block}
 .bar .in{max-width:1180px;margin:0 auto;display:flex;gap:10px;align-items:center}
@@ -337,27 +356,106 @@ td.acao{width:44px}
   window.addEventListener('beforeunload', function (e) { if (sujo) { e.preventDefault(); e.returnValue = ''; } });
 
   /* ---------- pedidos ---------- */
+  var PEDIDOS = [], filtro = 'pendentes';
+  var FLUXO = { 'Novo': 'Em preparo', 'Em preparo': 'Feito' };
+
   function renderPedidos() {
-    $('#conteudo').innerHTML = '<div class="panel"><div class="head"><h2>Últimos pedidos</h2><div class="sp"></div>' +
-      '<button class="btn btn-ghost" id="attPed">Atualizar</button></div><div class="cards" id="pedList"><p class="hint">Carregando…</p></div></div>';
-    apiGet('action=pedidos&limite=60&token=' + encodeURIComponent(token)).then(function (r) {
-      var box = document.getElementById('pedList');
-      if (!r.ok) { box.innerHTML = '<p class="hint">' + esc(r.erro || 'erro') + '</p>'; return; }
-      if (!r.pedidos.length) { box.innerHTML = '<p class="hint">Nenhum pedido registrado ainda.</p>'; return; }
-      box.innerHTML = r.pedidos.map(function (p) {
-        return '<div class="ped"><span class="tot">' + esc(brl(p.total)) + '</span><b>#' + esc(p.codigo) + '</b> · ' + esc(p.data) +
-          '<small>' + esc(p.cliente) + ' · ' + esc(p.telefone) + '</small>' +
-          '<small>' + esc(p.tipo) + (p.bairro ? ' · ' + esc(p.bairro) : '') + '</small>' +
-          '<small>' + esc(p.itens) + '</small>' +
-          '<small>' + esc(p.detalhe) + '</small></div>';
-      }).join('');
+    $('#conteudo').innerHTML = '<div class="panel"><div class="head"><h2>Pedidos</h2>' +
+      '<small id="pedResumo">carregando…</small><div class="sp"></div>' +
+      '<div class="filtros" id="filtros">' +
+      '<button type="button" data-f="pendentes" aria-pressed="' + (filtro === 'pendentes') + '">Em aberto</button>' +
+      '<button type="button" data-f="todos" aria-pressed="' + (filtro === 'todos') + '">Todos</button>' +
+      '</div><button class="btn btn-ghost" id="attPed">Atualizar</button></div>' +
+      '<div class="cards" id="pedList"><p class="hint">Carregando…</p></div></div>';
+    apiGet('action=pedidos&limite=80&token=' + encodeURIComponent(token)).then(function (r) {
+      if (!r.ok) { document.getElementById('pedList').innerHTML = '<p class="hint">' + esc(r.erro || 'erro') + '</p>'; return; }
+      PEDIDOS = r.pedidos || [];
+      pintarPedidos();
+    }).catch(function () {
+      document.getElementById('pedList').innerHTML = '<p class="hint">Erro de conexão.</p>';
     });
   }
+
+  function statusDe(p) {
+    var s = String(p.status || 'Novo').trim();
+    return s || 'Novo';
+  }
+  function classeStatus(s) {
+    var t = s.toLowerCase();
+    if (t.indexOf('prepar') > -1) return 'preparo';
+    if (t.indexOf('cancel') > -1) return 'cancelado';
+    if (t === 'novo') return 'novo';
+    return 'feito';
+  }
+
+  function pintarPedidos() {
+    var box = document.getElementById('pedList');
+    var abertos = PEDIDOS.filter(function (p) { return classeStatus(statusDe(p)) === 'novo' || classeStatus(statusDe(p)) === 'preparo'; });
+    var lista = filtro === 'pendentes' ? abertos : PEDIDOS;
+    var resumo = document.getElementById('pedResumo');
+    if (resumo) resumo.textContent = abertos.length + ' em aberto · ' + PEDIDOS.length + ' no total';
+
+    if (!lista.length) {
+      box.innerHTML = '<p class="hint">' + (filtro === 'pendentes' ? 'Nenhum pedido em aberto. Tudo entregue!' : 'Nenhum pedido registrado ainda.') + '</p>';
+      return;
+    }
+    box.innerHTML = lista.map(function (p) {
+      var st = statusDe(p), cls = classeStatus(st), prox = FLUXO[st];
+      var zap = String(p.telefone || '').replace(/\D/g, '');
+      if (zap.length === 10 || zap.length === 11) zap = '55' + zap;
+      return '<div class="ped ' + cls + '" data-codigo="' + esc(p.codigo) + '">' +
+        '<div class="topo"><b>#' + esc(p.codigo) + '</b><span class="selo ' + cls + '">' + esc(st) + '</span>' +
+        '<span class="sp"></span><span class="tot">' + esc(brl(p.total)) + '</span></div>' +
+        '<small>' + esc(dataHora(p.data)) + '</small>' +
+        '<small>' + esc(p.cliente) + ' · ' + esc(p.telefone) + '</small>' +
+        '<small>' + esc(p.tipo) + (p.bairro ? ' · ' + esc(p.bairro) : '') + (p.endereco ? ' · ' + esc(p.endereco) : '') + '</small>' +
+        '<small>' + esc(p.itens) + '</small>' +
+        '<small>' + esc(p.detalhe) + '</small>' +
+        (p.observacoes ? '<small>Obs.: ' + esc(p.observacoes) + '</small>' : '') +
+        '<div class="acoes">' +
+        (prox ? '<button type="button" class="ok" data-status="' + esc(prox) + '" data-cod="' + esc(p.codigo) + '">' + (prox === 'Feito' ? '✓ Marcar como feito' : '▶ Em preparo') + '</button>' : '') +
+        (cls === 'feito' || cls === 'cancelado' ? '<button type="button" data-status="Novo" data-cod="' + esc(p.codigo) + '">↺ Reabrir</button>' : '') +
+        (cls !== 'cancelado' && cls !== 'feito' ? '<button type="button" data-status="Cancelado" data-cod="' + esc(p.codigo) + '">Cancelar</button>' : '') +
+        (zap ? '<a class="zap" href="https://wa.me/' + zap + '" target="_blank" rel="noopener" title="Falar com o cliente">💬</a>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+
+  function dataHora(v) {
+    var s = String(v || '');
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+      var d = new Date(s);
+      if (!isNaN(d)) return d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', ' ·');
+    }
+    return s;
+  }
+
   function brl(v) {
     var n = Number(String(v).replace(',', '.')) || 0;
     return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
-  document.addEventListener('click', function (e) { if (e.target.id === 'attPed') renderPedidos(); });
+
+  document.addEventListener('click', function (e) {
+    if (e.target.id === 'attPed') { renderPedidos(); return; }
+    var f = e.target.closest('#filtros button');
+    if (f) {
+      filtro = f.getAttribute('data-f');
+      Array.prototype.forEach.call(f.parentNode.children, function (x) { x.setAttribute('aria-pressed', x === f ? 'true' : 'false'); });
+      pintarPedidos();
+      return;
+    }
+    var b = e.target.closest('[data-status][data-cod]');
+    if (!b) return;
+    var codigo = b.getAttribute('data-cod'), novo = b.getAttribute('data-status');
+    if (novo === 'Cancelado' && !confirm('Cancelar o pedido #' + codigo + '?')) return;
+    Array.prototype.forEach.call(b.parentNode.querySelectorAll('button'), function (x) { x.disabled = true; });
+    api({ action: 'status', token: token, codigo: codigo, status: novo }).then(function (r) {
+      if (!r.ok) { msg(r.erro || 'Não consegui mudar o status', true); pintarPedidos(); return; }
+      PEDIDOS.forEach(function (p) { if (String(p.codigo) === String(codigo)) p.status = novo; });
+      msg('Pedido #' + codigo + ' → ' + novo + '.');
+      pintarPedidos();
+    }).catch(function () { msg('Erro de conexão.', true); pintarPedidos(); });
+  });
 
   if (token) abrirPainel();
 })();
