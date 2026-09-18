@@ -300,9 +300,9 @@ a{color:var(--gold)}
 .toast.err svg{color:var(--red)}
 
 /* Convite para instalar o app */
-.install{position:fixed;left:0;right:0;bottom:0;z-index:70;padding:0 12px calc(12px + var(--safe-b));transform:translateY(130%);transition:transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.install{position:fixed;left:0;right:0;top:calc(var(--top) + 8px);z-index:70;padding:0 12px;transform:translateY(-140%);transition:transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
 .install.show{transform:none;pointer-events:auto}
-.install .box{max-width:560px;margin:0 auto;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line-2);border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.7);padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.install .box{max-width:560px;margin:0 auto;border-top:3px solid var(--gold);background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line-2);border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.7);padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
 .install img{width:54px;height:54px;border-radius:14px;box-shadow:0 0 0 2px var(--gold)}
 .install .txt b{display:block;font-family:var(--font-c);font-weight:700;font-size:19px;letter-spacing:.3px;color:var(--cream);line-height:1.15}
 .install .txt span{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
@@ -312,7 +312,7 @@ a{color:var(--gold)}
 .install .acao .btn{height:46px;font-size:17px;flex:1}
 .install ol{grid-column:1 / -1;margin:2px 0 0;padding-left:20px;color:#d9d4cb;font-size:14px;line-height:1.5}
 .install ol b{color:var(--cream)}
-@media (min-width:560px){.install{padding-bottom:20px}}
+@media (min-width:560px){.install{top:calc(var(--top) + 14px)}}
 
 /* Selo de status na barra do topo */
 .statuspill{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:999px;background:rgba(60,203,107,.12);border:1px solid rgba(60,203,107,.45);color:#7ee6a0;font-family:var(--font-c);font-weight:700;font-size:14.5px;letter-spacing:.4px;white-space:nowrap;flex:none}
@@ -420,7 +420,7 @@ a{color:var(--gold)}
     <div><strong style="color:var(--cream)">Dejapa Burguer</strong> · Hambúrgueres artesanais</div>
     <div style="margin-top:4px">Pedidos e delivery: <a id="waFoot" href="#" target="_blank" rel="noopener">(11) 98832-0261</a></div>
     <div style="margin-top:10px;font-size:12.5px">Preços sujeitos a alteração sem aviso prévio.</div>
-    <div class="assinatura">Desenvolvido por <strong>Yoshitake Consultoria de Tecnologia | (11) 94959-7214</strong></div>
+    <div class="assinatura">Desenvolvido por <strong>Yoshitake Consultoria de Tecnologia</strong></div>
   </footer>
 </main>
 
@@ -1471,7 +1471,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       return q && q.ate && Date.now() < q.ate;
     }
     function adiar(dias) { store(CHAVE, { ate: Date.now() + dias * 864e5 }); }
-    function mostrar(atraso) { setTimeout(function () { caixa.classList.add('show'); }, atraso || 1500); }
+    function mostrar(atraso) { setTimeout(function () { caixa.classList.add('show'); }, atraso || 600); }
     function esconder() { caixa.classList.remove('show'); }
 
     if (jaInstalado || adiado()) return;
@@ -1493,7 +1493,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       $('#installAcao').hidden = true;
       $('#installPassos').hidden = false;
       $('#installSub').textContent = 'Adicione à tela de início e peça em 2 toques.';
-      mostrar(2500);
+      mostrar(900);
     }
 
     $('#installSim').addEventListener('click', function () {

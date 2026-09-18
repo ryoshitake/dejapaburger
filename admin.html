@@ -192,7 +192,13 @@ td.acao{width:44px}
   ];
 
   var ICONES = ['i-burger', 'i-fries', 'i-drink'];
-  var token = sessionStorage.getItem('dejapa.admin.token') || '';
+  var token = (function () {
+    try {
+      var g = JSON.parse(localStorage.getItem('dejapa.admin.sessao') || 'null');
+      if (g && g.token && g.ate > Date.now()) return g.token;
+    } catch (e) {}
+    return '';
+  })();
   var dados = {}, abaAtual = 'Produtos', sujo = false;
 
   var $ = function (s) { return document.querySelector(s); };
@@ -225,7 +231,8 @@ td.acao{width:44px}
     api({ action: 'login', pin: pin }).then(function (r) {
       $('#entrar').disabled = false;
       if (!r.ok) { $('#loginErr').textContent = r.erro || 'PIN incorreto'; $('#loginErr').className = 'msg err show'; return; }
-      token = r.token; sessionStorage.setItem('dejapa.admin.token', token);
+      token = r.token;
+      try { localStorage.setItem('dejapa.admin.sessao', JSON.stringify({ token: token, ate: Date.now() + 12 * 36e5 })); } catch (e) {}
       abrirPainel();
     }).catch(function () {
       $('#entrar').disabled = false;
@@ -234,7 +241,7 @@ td.acao{width:44px}
     });
   }
   $('#sair').addEventListener('click', function () {
-    sessionStorage.removeItem('dejapa.admin.token'); location.reload();
+    localStorage.removeItem('dejapa.admin.sessao'); localStorage.removeItem('dejapa.admin.dados.v1'); location.reload();
   });
 
   function abrirPainel() {
@@ -257,19 +264,77 @@ td.acao{width:44px}
   $('#recarregar').addEventListener('click', function () { marcarSujo(false); carregar(); });
   $('#descartar').addEventListener('click', function () { marcarSujo(false); carregar(); });
 
-  function carregar() {
-    $('#conteudo').innerHTML = '<p class="hint">Carregando…</p>';
-    apiGet('action=raw&token=' + encodeURIComponent(token)).then(function (r) {
-      if (!r.ok) { sessionStorage.removeItem('dejapa.admin.token'); location.reload(); return; }
-      dados = r.abas;
-      return apiGet('action=menu');
-    }).then(function (m) {
-      if (m && m.horario) {
-        $('#statusPill').textContent = m.horario.texto || (m.horario.aberto ? 'Aberto' : 'Fechado');
-        $('#statusPill').className = 'pill' + (m.horario.aberto ? ' on' : '');
-      }
+  var CACHE = 'dejapa.admin.dados.v1';
+
+  function guardarCache(abas, horario) {
+    try { localStorage.setItem(CACHE, JSON.stringify({ abas: abas, horario: horario, em: Date.now() })); } catch (e) {}
+  }
+  function lerCache() {
+    try { return JSON.parse(localStorage.getItem(CACHE) || 'null'); } catch (e) { return null; }
+  }
+  function pintarStatus(horario) {
+    if (!horario) return;
+    $('#statusPill').textContent = horario.texto || (horario.aberto ? 'Aberto' : 'Fechado');
+    $('#statusPill').className = 'pill' + (horario.aberto ? ' on' : '');
+  }
+  function carregando(ligado) {
+    var b = $('#recarregar');
+    b.disabled = !!ligado;
+    b.textContent = ligado ? 'Atualizando…' : 'Recarregar';
+  }
+
+  /* Busca os dados. Tenta numa chamada só (action=tudo); se a API ainda for a
+     antiga, cai para as duas chamadas em paralelo. */
+  function buscarDados() {
+    var suporta = null;
+    try { suporta = localStorage.getItem('dejapa.api.tudo'); } catch (e) {}
+    var caminhoAntigo = function () {
+      return Promise.all([
+        apiGet('action=raw&token=' + encodeURIComponent(token)),
+        apiGet('action=menu')
+      ]).then(function (res) {
+        return { ok: res[0] && res[0].ok, erro: res[0] && res[0].erro, abas: res[0] && res[0].abas, horario: res[1] && res[1].horario };
+      });
+    };
+    if (suporta === 'nao') return caminhoAntigo();
+    return apiGet('action=tudo&token=' + encodeURIComponent(token)).then(function (r) {
+      if (r && r.ok && r.abas) { try { localStorage.setItem('dejapa.api.tudo', 'sim'); } catch (e) {} return r; }
+      try { localStorage.setItem('dejapa.api.tudo', 'nao'); } catch (e) {}
+      return Promise.all([
+        apiGet('action=raw&token=' + encodeURIComponent(token)),
+        apiGet('action=menu')
+      ]).then(function (res) {
+        return { ok: res[0] && res[0].ok, erro: res[0] && res[0].erro, abas: res[0] && res[0].abas, horario: res[1] && res[1].horario };
+      });
+    });
+  }
+
+  function carregar(silencioso) {
+    var cache = lerCache();
+    if (cache && cache.abas) {                 // mostra na hora o que já temos
+      dados = cache.abas;
+      pintarStatus(cache.horario);
       render();
-    }).catch(function () { $('#conteudo').innerHTML = '<p class="hint">Erro ao carregar. Confira a URL da API.</p>'; });
+    } else if (!silencioso) {
+      $('#conteudo').innerHTML = '<p class="hint">Carregando…</p>';
+    }
+    carregando(true);
+    return buscarDados().then(function (r) {
+      carregando(false);
+      if (!r.ok) {
+        if (cache && cache.abas) { msg('Não consegui atualizar agora. Mostrando os últimos dados.', true); return; }
+        localStorage.removeItem('dejapa.admin.sessao'); location.reload(); return;
+      }
+      dados = r.abas;
+      pintarStatus(r.horario);
+      if (r.pedidos) PEDIDOS = r.pedidos;
+      guardarCache(r.abas, r.horario);
+      render();
+    }).catch(function () {
+      carregando(false);
+      if (!cache) $('#conteudo').innerHTML = '<p class="hint">Erro ao carregar. Confira a URL da API.</p>';
+      else msg('Sem conexão com a planilha agora.', true);
+    });
   }
 
   /* ---------- render ---------- */
@@ -376,7 +441,10 @@ td.acao{width:44px}
       if (!r.ok) { msg(r.erro || 'Não foi possível salvar', true); $('#barraTxt').textContent = 'Alterações não salvas'; return; }
       marcarSujo(false);
       msg('Salvo na planilha: ' + abaAtual + ' (' + r.linhas + ' linhas).');
-      carregar();
+      var c = lerCache();
+      guardarCache(dados, c && c.horario);
+      render();
+      setTimeout(function () { carregar(true); }, 1500);   // confere em segundo plano
     }).catch(function () {
       b.disabled = false; $('#barraTxt').textContent = 'Alterações não salvas';
       msg('Erro de conexão ao salvar.', true);
@@ -396,12 +464,20 @@ td.acao{width:44px}
       '<button type="button" data-f="todos" aria-pressed="' + (filtro === 'todos') + '">Todos</button>' +
       '</div><button class="btn btn-ghost" id="attPed">Atualizar</button></div>' +
       '<div id="pedList"><p class="hint" style="padding:14px">Carregando…</p></div></div>';
+    if (PEDIDOS.length) pintarPedidos();                 // mostra o que já está em memória
+    var alvo = document.getElementById('attPed');
+    if (alvo) alvo.textContent = 'Atualizando…';
     apiGet('action=pedidos&limite=80&token=' + encodeURIComponent(token)).then(function (r) {
-      if (!r.ok) { document.getElementById('pedList').innerHTML = '<p class="hint">' + esc(r.erro || 'erro') + '</p>'; return; }
+      if (alvo) alvo.textContent = 'Atualizar';
+      if (!r.ok) {
+        if (!PEDIDOS.length) document.getElementById('pedList').innerHTML = '<p class="hint">' + esc(r.erro || 'erro') + '</p>';
+        return;
+      }
       PEDIDOS = r.pedidos || [];
       pintarPedidos();
     }).catch(function () {
-      document.getElementById('pedList').innerHTML = '<p class="hint">Erro de conexão.</p>';
+      if (alvo) alvo.textContent = 'Atualizar';
+      if (!PEDIDOS.length) document.getElementById('pedList').innerHTML = '<p class="hint">Erro de conexão.</p>';
     });
   }
 
