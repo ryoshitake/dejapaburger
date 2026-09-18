@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dejapa Burguer · Administração</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="color-scheme" content="dark">
+<style>
+:root{
+  --bg:#0b0b0b;--surface:#141414;--surface-2:#1b1b1b;--surface-3:#242424;
+  --line:#2a2a2a;--line-2:#3a3a3a;--red:#D9161C;--gold:#F2C230;--cream:#F6E2B0;
+  --text:#F4F1EA;--muted:#A9A39A;--ok:#3CCB6B;--err:#FF5A5F;
+  --font:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.4}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3{margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 80px}
+
+/* topo */
+header{position:sticky;top:0;z-index:20;background:rgba(11,11,11,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 16px}
+header h1{font-size:18px;letter-spacing:.3px}
+header h1 b{color:var(--gold)}
+header .sp{flex:1}
+.pill{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--muted)}
+.pill.on{color:var(--ok);border-color:rgba(60,203,107,.4)}
+
+/* abas */
+nav{display:flex;gap:6px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text);font-weight:600;font-size:14px;white-space:nowrap}
+nav button[aria-current="true"]{background:var(--gold);border-color:var(--gold);color:#111}
+
+/* login */
+.login{max-width:360px;margin:12vh auto;padding:24px;border-radius:18px;background:var(--surface);border:1px solid var(--line-2);text-align:center}
+.login h2{font-size:20px;margin-bottom:6px;color:var(--cream)}
+.login p{color:var(--muted);font-size:14px;margin:0 0 18px}
+.login input{width:100%;height:52px;text-align:center;font-size:22px;letter-spacing:6px;border-radius:12px;background:#0f0f0f;border:1px solid var(--line-2);margin-bottom:12px}
+
+/* tabela */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:12px}
+.panel .head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel .head h2{font-size:17px;color:var(--cream)}
+.panel .head small{color:var(--muted);font-size:13px}
+.panel .head .sp{flex:1}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--gold);white-space:nowrap;background:var(--surface-2)}
+td input,td select,td textarea{width:100%;min-width:90px;padding:8px 10px;border-radius:8px;background:#0f0f0f;border:1px solid var(--line-2);font-size:14px}
+td textarea{min-height:64px;resize:vertical}
+td input:focus,td select:focus,td textarea:focus{outline:none;border-color:var(--gold)}
+td.acao{width:44px}
+.del{width:34px;height:34px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface-2);color:#ff9095;font-size:16px;line-height:1}
+.w-sm input,.w-sm select{min-width:70px}
+.w-lg textarea{min-width:260px}
+
+/* botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:14.5px}
+.btn-primary{background:var(--red);color:#fff;width:100%}
+.btn-gold{background:var(--gold);color:#111}
+.btn-ghost{background:var(--surface-2);border-color:var(--line-2);color:var(--text)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* avisos */
+.msg{margin:12px 0;padding:10px 12px;border-radius:10px;font-size:14px;display:none}
+.msg.show{display:block}
+.msg.ok{background:rgba(60,203,107,.12);border:1px solid rgba(60,203,107,.4);color:#8ae8ab}
+.msg.err{background:rgba(217,22,28,.14);border:1px solid rgba(217,22,28,.45);color:#ff9095}
+.hint{color:var(--muted);font-size:13px;margin:10px 2px}
+.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));padding:14px}
+.ped{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ped b{color:var(--gold)}
+.ped .tot{float:right;font-weight:700}
+.ped small{display:block;color:var(--muted);margin-top:4px;font-size:13px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px;background:rgba(11,11,11,.95);border-top:1px solid var(--line);display:none}
+.bar.show{display:block}
+.bar .in{max-width:1180px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.bar .in span{flex:1;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+
+<div id="login" class="login">
+  <h2>Painel Dejapa</h2>
+  <p>Digite o PIN de administrador</p>
+  <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="current-password">
+  <button class="btn btn-primary" id="entrar">Entrar</button>
+  <div class="msg err" id="loginErr"></div>
+  <p class="hint" id="apiAviso" style="margin-top:16px"></p>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <div class="in">
+      <h1>Dejapa <b>Admin</b></h1>
+      <span class="pill" id="statusPill">—</span>
+      <div class="sp"></div>
+      <button class="btn btn-ghost" id="recarregar">Recarregar</button>
+      <button class="btn btn-ghost" id="sair">Sair</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <nav id="abas"></nav>
+    <div class="msg" id="msg"></div>
+    <div id="conteudo"></div>
+    <p class="hint">Tudo o que você salva aqui vai direto para a planilha do Google Sheets. O app do cliente recarrega o cardápio sozinho a cada 5 minutos.</p>
+  </div>
+
+  <div class="bar" id="barra">
+    <div class="in">
+      <span id="barraTxt">Alterações não salvas</span>
+      <button class="btn btn-ghost" id="descartar">Descartar</button>
+      <button class="btn btn-gold" id="salvar">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Cole aqui a mesma URL /exec do Apps Script usada no app do cliente */
+  var API_URL = 'https://script.google.com/macros/s/AKfycbz4gfVipzSdEoxAEzelU7MXIIa7znBJD-COBeUF_YlHkeLPXKyjMCt_5dziVNhMgr1K/exec';
+
+  var ABAS = [
+    { id: 'Produtos', nome: 'Produtos', cols: [
+      { c: 'id', t: 'texto', dica: 'sem espaços' }, { c: 'categoria', t: 'categoria' }, { c: 'nome', t: 'texto' },
+      { c: 'descricao', t: 'longo' }, { c: 'preco', t: 'moeda' }, { c: 'imagem', t: 'texto' },
+      { c: 'opcoes', t: 'texto', dica: 'ids separados por vírgula' }, { c: 'observacao', t: 'simnao' },
+      { c: 'disponivel', t: 'simnao' }, { c: 'ordem', t: 'numero' } ] },
+    { id: 'Categorias', nome: 'Categorias', cols: [
+      { c: 'id', t: 'texto' }, { c: 'nome', t: 'texto' }, { c: 'icone', t: 'icone' },
+      { c: 'aviso', t: 'longo' }, { c: 'ordem', t: 'numero' }, { c: 'ativo', t: 'simnao' } ] },
+    { id: 'Opcoes', nome: 'Opções e adicionais', cols: [
+      { c: 'id', t: 'texto' }, { c: 'tipo', t: 'tipoopcao' }, { c: 'titulo', t: 'texto' }, { c: 'detalhe', t: 'texto' },
+      { c: 'preco', t: 'moeda' }, { c: 'obrigatorio', t: 'simnao' },
+      { c: 'escolhas', t: 'longo', dica: 'separe por ponto e vírgula' }, { c: 'resumo', t: 'texto' } ] },
+    { id: 'Pagamentos', nome: 'Pagamentos', cols: [
+      { c: 'id', t: 'fixo' }, { c: 'nome', t: 'texto' }, { c: 'descricao', t: 'texto' }, { c: 'ativo', t: 'simnao' } ] },
+    { id: 'Bairros', nome: 'Bairros e taxas', cols: [
+      { c: 'bairro', t: 'texto' }, { c: 'taxa', t: 'moeda' }, { c: 'ativo', t: 'simnao' } ] },
+    { id: 'Horarios', nome: 'Horários', cols: [
+      { c: 'dia', t: 'fixo' }, { c: 'aberto', t: 'simnao' }, { c: 'abre', t: 'hora' }, { c: 'fecha', t: 'hora' } ] },
+    { id: 'Config', nome: 'Configurações', cols: [
+      { c: 'chave', t: 'fixo' }, { c: 'valor', t: 'texto' } ] },
+    { id: 'Pedidos', nome: 'Pedidos', somenteLeitura: true }
+  ];
+
+  var ICONES = ['i-burger', 'i-fries', 'i-drink'];
+  var token = sessionStorage.getItem('dejapa.admin.token') || '';
+  var dados = {}, abaAtual = 'Produtos', sujo = false;
+
+  var $ = function (s) { return document.querySelector(s); };
+
+  function api(corpo) {
+    return fetch(API_URL, { method: 'POST', body: JSON.stringify(corpo), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+      .then(function (r) { return r.json(); });
+  }
+  function apiGet(qs) {
+    return fetch(API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + qs + '&t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); });
+  }
+  function msg(txt, erro) {
+    var m = $('#msg');
+    m.textContent = txt; m.className = 'msg show ' + (erro ? 'err' : 'ok');
+    clearTimeout(msg.t); msg.t = setTimeout(function () { m.className = 'msg'; }, 4000);
+  }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function marcarSujo(v) { sujo = v; $('#barra').classList.toggle('show', v); }
+
+  /* ---------- login ---------- */
+  if (!API_URL) $('#apiAviso').textContent = 'Atenção: a URL da API ainda não foi configurada neste arquivo (variável API_URL).';
+  $('#entrar').addEventListener('click', entrar);
+  $('#pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
+
+  function entrar() {
+    var pin = $('#pin').value.trim();
+    if (!pin) return;
+    $('#entrar').disabled = true;
+    api({ action: 'login', pin: pin }).then(function (r) {
+      $('#entrar').disabled = false;
+      if (!r.ok) { $('#loginErr').textContent = r.erro || 'PIN incorreto'; $('#loginErr').className = 'msg err show'; return; }
+      token = r.token; sessionStorage.setItem('dejapa.admin.token', token);
+      abrirPainel();
+    }).catch(function () {
+      $('#entrar').disabled = false;
+      $('#loginErr').textContent = 'Não consegui falar com a planilha. Confira a URL da API.';
+      $('#loginErr').className = 'msg err show';
+    });
+  }
+  $('#sair').addEventListener('click', function () {
+    sessionStorage.removeItem('dejapa.admin.token'); location.reload();
+  });
+
+  function abrirPainel() {
+    $('#login').hidden = true; $('#app').hidden = false;
+    $('#abas').innerHTML = ABAS.map(function (a) {
+      return '<button type="button" data-aba="' + a.id + '"' + (a.id === abaAtual ? ' aria-current="true"' : '') + '>' + esc(a.nome) + '</button>';
+    }).join('');
+    carregar();
+  }
+  $('#abas').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-aba]'); if (!b) return;
+    if (sujo && !confirm('Você tem alterações não salvas. Trocar de aba mesmo assim?')) return;
+    abaAtual = b.getAttribute('data-aba');
+    marcarSujo(false);
+    Array.prototype.forEach.call($('#abas').children, function (x) {
+      x.setAttribute('aria-current', x.getAttribute('data-aba') === abaAtual ? 'true' : 'false');
+    });
+    render();
+  });
+  $('#recarregar').addEventListener('click', function () { marcarSujo(false); carregar(); });
+  $('#descartar').addEventListener('click', function () { marcarSujo(false); carregar(); });
+
+  function carregar() {
+    $('#conteudo').innerHTML = '<p class="hint">Carregando…</p>';
+    apiGet('action=raw&token=' + encodeURIComponent(token)).then(function (r) {
+      if (!r.ok) { sessionStorage.removeItem('dejapa.admin.token'); location.reload(); return; }
+      dados = r.abas;
+      return apiGet('action=menu');
+    }).then(function (m) {
+      if (m && m.horario) {
+        $('#statusPill').textContent = m.horario.texto || (m.horario.aberto ? 'Aberto' : 'Fechado');
+        $('#statusPill').className = 'pill' + (m.horario.aberto ? ' on' : '');
+      }
+      render();
+    }).catch(function () { $('#conteudo').innerHTML = '<p class="hint">Erro ao carregar. Confira a URL da API.</p>'; });
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    var def = ABAS.filter(function (a) { return a.id === abaAtual; })[0];
+    if (def.somenteLeitura) return renderPedidos();
+    var linhas = dados[def.id] || [];
+    var html = '<div class="panel"><div class="head"><h2>' + esc(def.nome) + '</h2>' +
+      '<small>' + linhas.length + ' registro(s)</small><div class="sp"></div>' +
+      (def.id === 'Config' || def.id === 'Horarios' ? '' : '<button class="btn btn-ghost" id="novo">+ Nova linha</button>') +
+      '</div><div class="scroll"><table><thead><tr>' +
+      def.cols.map(function (c) { return '<th>' + esc(c.c) + (c.dica ? '<br><small style="text-transform:none;letter-spacing:0;color:var(--muted)">' + esc(c.dica) + '</small>' : '') + '</th>'; }).join('') +
+      (def.id === 'Config' || def.id === 'Horarios' ? '' : '<th></th>') + '</tr></thead><tbody>' +
+      linhas.map(function (l, i) { return '<tr data-i="' + i + '">' + def.cols.map(function (c) { return '<td class="' + larg(c.t) + '">' + campo(c, l[c.c], i) + '</td>'; }).join('') +
+        (def.id === 'Config' || def.id === 'Horarios' ? '' : '<td class="acao"><button class="del" type="button" data-del="' + i + '" title="Excluir">✕</button></td>') + '</tr>'; }).join('') +
+      '</tbody></table></div></div>';
+    $('#conteudo').innerHTML = html;
+  }
+
+  function larg(t) { return t === 'longo' ? 'w-lg' : (t === 'simnao' || t === 'numero' || t === 'moeda' || t === 'hora' ? 'w-sm' : ''); }
+
+  function campo(col, valor, i) {
+    var v = valor === undefined || valor === null ? '' : valor;
+    var attr = 'data-col="' + col.c + '" data-i="' + i + '"';
+    if (col.t === 'fixo') return '<input ' + attr + ' value="' + esc(v) + '" readonly style="color:var(--muted)">';
+    if (col.t === 'simnao') {
+      var on = String(v).trim().toUpperCase() === 'SIM';
+      return '<select ' + attr + '><option value="SIM"' + (on ? ' selected' : '') + '>SIM</option><option value="NAO"' + (on ? '' : ' selected') + '>NÃO</option></select>';
+    }
+    if (col.t === 'tipoopcao') {
+      return '<select ' + attr + '><option value="radio"' + (String(v) === 'check' ? '' : ' selected') + '>radio (escolher 1)</option>' +
+             '<option value="check"' + (String(v) === 'check' ? ' selected' : '') + '>check (adicional)</option></select>';
+    }
+    if (col.t === 'icone') {
+      return '<select ' + attr + '>' + ICONES.map(function (ic) { return '<option' + (String(v) === ic ? ' selected' : '') + '>' + ic + '</option>'; }).join('') + '</select>';
+    }
+    if (col.t === 'categoria') {
+      var cats = (dados.Categorias || []).map(function (c) { return String(c.id); });
+      if (cats.indexOf(String(v)) < 0 && v) cats.push(String(v));
+      return '<select ' + attr + '>' + cats.map(function (c) { return '<option' + (String(v) === c ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select>';
+    }
+    if (col.t === 'longo') return '<textarea ' + attr + '>' + esc(v) + '</textarea>';
+    if (col.t === 'moeda' || col.t === 'numero') return '<input ' + attr + ' inputmode="decimal" value="' + esc(v) + '">';
+    if (col.t === 'hora') return '<input ' + attr + ' placeholder="18:00" value="' + esc(hora(v)) + '">';
+    return '<input ' + attr + ' value="' + esc(v) + '">';
+  }
+  function hora(v) {
+    var s = String(v);
+    var m = s.match(/(\d{1,2}):(\d{2})/);
+    return m ? ('0' + m[1]).slice(-2) + ':' + m[2] : s;
+  }
+
+  document.addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el.hasAttribute || !el.hasAttribute('data-col')) return;
+    var i = +el.getAttribute('data-i'), c = el.getAttribute('data-col');
+    var lista = dados[abaAtual] || [];
+    if (!lista[i]) return;
+    lista[i][c] = el.value;
+    marcarSujo(true);
+  });
+  document.addEventListener('change', function (e) {
+    var el = e.target;
+    if (el.hasAttribute && el.hasAttribute('data-col')) {
+      var i = +el.getAttribute('data-i'), c = el.getAttribute('data-col');
+      if (dados[abaAtual] && dados[abaAtual][i]) { dados[abaAtual][i][c] = el.value; marcarSujo(true); }
+    }
+  });
+  document.addEventListener('click', function (e) {
+    var d = e.target.closest('[data-del]');
+    if (d) {
+      var i = +d.getAttribute('data-del');
+      if (!confirm('Excluir esta linha?')) return;
+      dados[abaAtual].splice(i, 1); marcarSujo(true); render(); return;
+    }
+    if (e.target.id === 'novo') {
+      var def = ABAS.filter(function (a) { return a.id === abaAtual; })[0];
+      var nova = {};
+      def.cols.forEach(function (c) {
+        nova[c.c] = c.t === 'simnao' ? 'SIM' : (c.t === 'moeda' || c.t === 'numero' ? 0 : '');
+      });
+      if (abaAtual === 'Produtos') { nova.disponivel = 'SIM'; nova.observacao = 'SIM'; nova.ordem = (dados.Produtos || []).length + 1; }
+      (dados[abaAtual] = dados[abaAtual] || []).push(nova);
+      marcarSujo(true); render();
+      var linhas = document.querySelectorAll('tbody tr');
+      if (linhas.length) linhas[linhas.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  $('#salvar').addEventListener('click', function () {
+    var b = $('#salvar'); b.disabled = true; $('#barraTxt').textContent = 'Salvando…';
+    api({ action: 'salvar', token: token, aba: abaAtual, linhas: dados[abaAtual] || [] }).then(function (r) {
+      b.disabled = false;
+      if (!r.ok) { msg(r.erro || 'Não foi possível salvar', true); $('#barraTxt').textContent = 'Alterações não salvas'; return; }
+      marcarSujo(false);
+      msg('Salvo na planilha: ' + abaAtual + ' (' + r.linhas + ' linhas).');
+      carregar();
+    }).catch(function () {
+      b.disabled = false; $('#barraTxt').textContent = 'Alterações não salvas';
+      msg('Erro de conexão ao salvar.', true);
+    });
+  });
+  window.addEventListener('beforeunload', function (e) { if (sujo) { e.preventDefault(); e.returnValue = ''; } });
+
+  /* ---------- pedidos ---------- */
+  function renderPedidos() {
+    $('#conteudo').innerHTML = '<div class="panel"><div class="head"><h2>Últimos pedidos</h2><div class="sp"></div>' +
+      '<button class="btn btn-ghost" id="attPed">Atualizar</button></div><div class="cards" id="pedList"><p class="hint">Carregando…</p></div></div>';
+    apiGet('action=pedidos&limite=60&token=' + encodeURIComponent(token)).then(function (r) {
+      var box = document.getElementById('pedList');
+      if (!r.ok) { box.innerHTML = '<p class="hint">' + esc(r.erro || 'erro') + '</p>'; return; }
+      if (!r.pedidos.length) { box.innerHTML = '<p class="hint">Nenhum pedido registrado ainda.</p>'; return; }
+      box.innerHTML = r.pedidos.map(function (p) {
+        return '<div class="ped"><span class="tot">' + esc(brl(p.total)) + '</span><b>#' + esc(p.codigo) + '</b> · ' + esc(p.data) +
+          '<small>' + esc(p.cliente) + ' · ' + esc(p.telefone) + '</small>' +
+          '<small>' + esc(p.tipo) + (p.bairro ? ' · ' + esc(p.bairro) : '') + '</small>' +
+          '<small>' + esc(p.itens) + '</small>' +
+          '<small>' + esc(p.detalhe) + '</small></div>';
+      }).join('');
+    });
+  }
+  function brl(v) {
+    var n = Number(String(v).replace(',', '.')) || 0;
+    return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+  document.addEventListener('click', function (e) { if (e.target.id === 'attPed') renderPedidos(); });
+
+  if (token) abrirPainel();
+})();
+</script>
+</body>
+</html>
