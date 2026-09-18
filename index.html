@@ -756,8 +756,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var wrap = $('[data-f="bairro"]'), sel = $('#fBairroSel'), txt = $('#fBairro');
     if (!BAIRROS.length) { sel.hidden = true; txt.hidden = false; wrap.querySelector('span').innerHTML = 'Bairro'; return; }
     sel.hidden = false;
+    var lista = BAIRROS.filter(function (b) { return !/^outro/i.test(String(b.nome).trim()); });
     sel.innerHTML = '<option value="">Selecione o bairro…</option>' +
-      BAIRROS.map(function (b) { return '<option value="' + esc(b.nome) + '" data-taxa="' + (Number(b.taxa) || 0) + '">' + esc(b.nome) + (b.taxa ? ' · ' + money(b.taxa) : '') + '</option>'; }).join('') +
+      lista.map(function (b) { return '<option value="' + esc(b.nome) + '" data-taxa="' + (Number(b.taxa) || 0) + '">' + esc(b.nome) + (b.taxa ? ' · ' + money(b.taxa) : '') + '</option>'; }).join('') +
       '<option value="__outro">Outro bairro</option>';
     txt.hidden = true;
   }

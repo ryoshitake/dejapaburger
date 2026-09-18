@@ -241,7 +241,16 @@ function validar(token) { return String(token || '') === gerarToken(); }
 function lerTudo(token) {
   if (!validar(token)) return { ok: false, erro: 'Sem permissão' };
   var abas = ['Config', 'Horarios', 'Categorias', 'Opcoes', 'Produtos', 'Pagamentos', 'Bairros'], out = {};
-  abas.forEach(function (n) { out[n] = aba(n); });
+  abas.forEach(function (n) {
+    out[n] = aba(n).map(function (linha) {
+      var o = {};
+      for (var k in linha) {
+        // Horas vindas do Sheets chegam como Date; envia como texto HH:mm
+        o[k] = (linha[k] instanceof Date) ? Utilities.formatDate(linha[k], TZ, 'HH:mm') : linha[k];
+      }
+      return o;
+    });
+  });
   return { ok: true, abas: out };
 }
 
