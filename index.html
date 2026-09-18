@@ -1139,13 +1139,20 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var f = lastFocus.pop(); if (f && f.focus) try { f.focus({ preventScroll: true }); } catch (e) {}
   }
   function closeSheet() { if (viaHistory()) history.back(); else hideTop(); }
+  /* Fecha tudo na hora, sem depender do histórico do navegador.
+     Antes isso usava history.go(), que é assíncrono: se o histórico estivesse
+     fora de sincronia (app instalado, voltar do WhatsApp, botão voltar),
+     a tela de sucesso nunca abria e sobrava uma tela em branco. */
   function closeAll(cb) {
-    if (stack.length && viaHistory()) { afterClose = cb || null; history.go(-stack.length); }
-    else { while (stack.length) hideTop(); if (cb) cb(); }
+    afterClose = null;
+    while (stack.length) hideTop();
+    if (cb) { try { cb(); } catch (e) {} }
   }
   window.addEventListener('popstate', function (e) {
     var alvo = (e.state && e.state.sheets) || 0;
-    while (stack.length > alvo) hideTop();
+    // Histórico fora de sincronia: o "voltar" fecha uma tela mesmo assim.
+    if (alvo >= stack.length) { if (stack.length) hideTop(); }
+    else while (stack.length > alvo) hideTop();
     if (!stack.length && afterClose) { var f = afterClose; afterClose = null; f(); }
   });
   document.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) closeSheet(); });
@@ -1458,6 +1465,22 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (el.obs.value.trim()) { L.push(''); L.push('*OBSERVAÇÕES*'); L.push(el.obs.value.trim()); }
     return L.join('\n');
   }
+  /* Abre o WhatsApp. window.open às vezes é bloqueado ou devolve uma aba em
+     branco (principalmente com o app instalado), então tem o plano B do link. */
+  function abrirWhats(url) {
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (w) { try { w.opener = null; } catch (e) {} return true; }
+    try {
+      var a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      document.body.appendChild(a); a.click();
+      if (a.parentNode) a.parentNode.removeChild(a);
+      return true;
+    } catch (e) {}
+    return false;
+  }
+
   function registrarPedido() {
     if (!API_URL) return;
     var el = form.elements, tipo = currentTipo(), e = tipo === 'entrega' ? endereco() : { linha1: 'Retirada no balcão', bairro: '', ref: '' };
@@ -1506,8 +1529,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
     var msg = buildMessage(), url = waLink(msg), pag = el.pag.value, code = getOrderId(), valor = total();
     var online = pag === 'credito' && el.credModo.value === 'online';
-    var win = null;
-    try { win = window.open(url, '_blank'); if (win) win.opener = null; } catch (err) { win = null; }
+    var win = abrirWhats(url);
 
     $('#successBody').innerHTML =
       '<div class="ok">' + icon('i-check') + '</div>' +
