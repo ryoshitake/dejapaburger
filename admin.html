@@ -184,6 +184,16 @@ td.acao{width:44px}
       { c: 'id', t: 'fixo' }, { c: 'nome', t: 'texto' }, { c: 'descricao', t: 'texto' }, { c: 'ativo', t: 'simnao' } ] },
     { id: 'Bairros', nome: 'Bairros e taxas', cols: [
       { c: 'bairro', t: 'texto' }, { c: 'taxa', t: 'moeda' }, { c: 'ativo', t: 'simnao' } ] },
+    { id: 'Cupons', nome: 'Cupons', cols: [
+      { c: 'codigo', t: 'codigo', dica: 'o que o cliente digita' },
+      { c: 'tipo', t: 'tipocupom' },
+      { c: 'valor', t: 'moeda', dica: '10 = 10% ou R$ 10' },
+      { c: 'minimo', t: 'moeda', dica: 'pedido mínimo, 0 = sem' },
+      { c: 'validade', t: 'data', dica: 'aaaa-mm-dd, vazio = sem prazo' },
+      { c: 'limite', t: 'numero', dica: 'usos no total, 0 = sem limite' },
+      { c: 'usados', t: 'numero' },
+      { c: 'ativo', t: 'simnao' },
+      { c: 'descricao', t: 'texto', dica: 'aparece para o cliente' } ] },
     { id: 'Horarios', nome: 'Horários', cols: [
       { c: 'dia', t: 'fixo' }, { c: 'aberto', t: 'simnao' }, { c: 'abre', t: 'hora' }, { c: 'fecha', t: 'hora' } ] },
     { id: 'Config', nome: 'Configurações', cols: [
@@ -364,6 +374,22 @@ td.acao{width:44px}
       var on = String(v).trim().toUpperCase() === 'SIM';
       return '<select ' + attr + '><option value="SIM"' + (on ? ' selected' : '') + '>SIM</option><option value="NAO"' + (on ? '' : ' selected') + '>NÃO</option></select>';
     }
+    if (col.t === 'codigo') {
+      return '<input ' + attr + ' value="' + esc(v) + '" style="text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--gold)">';
+    }
+    if (col.t === 'tipocupom') {
+      var t = String(v || 'valor').toLowerCase();
+      return '<select ' + attr + '>' +
+        '<option value="percentual"' + (t.indexOf('percent') === 0 ? ' selected' : '') + '>% do pedido</option>' +
+        '<option value="valor"' + (t === 'valor' ? ' selected' : '') + '>R$ fixo</option>' +
+        '<option value="frete"' + (t.indexOf('frete') === 0 ? ' selected' : '') + '>Entrega grátis</option>' +
+        '</select>';
+    }
+    if (col.t === 'data') {
+      var d = String(v || '');
+      if (/^\d{4}-\d{2}-\d{2}T/.test(d)) d = d.slice(0, 10);
+      return '<input ' + attr + ' type="date" value="' + esc(d) + '">';
+    }
     if (col.t === 'tipoopcao') {
       return '<select ' + attr + '><option value="radio"' + (String(v) === 'check' ? '' : ' selected') + '>radio (escolher 1)</option>' +
              '<option value="check"' + (String(v) === 'check' ? ' selected' : '') + '>check (adicional)</option></select>';
@@ -427,6 +453,7 @@ td.acao{width:44px}
         nova[c.c] = c.t === 'simnao' ? 'SIM' : (c.t === 'moeda' || c.t === 'numero' ? 0 : '');
       });
       if (abaAtual === 'Produtos') { nova.disponivel = 'SIM'; nova.observacao = 'SIM'; nova.ordem = (dados.Produtos || []).length + 1; }
+      if (abaAtual === 'Cupons') { nova.tipo = 'percentual'; nova.valor = 10; nova.minimo = 0; nova.limite = 0; nova.usados = 0; nova.ativo = 'SIM'; }
       (dados[abaAtual] = dados[abaAtual] || []).push(nova);
       marcarSujo(true); render();
       var linhas = document.querySelectorAll('tbody tr');

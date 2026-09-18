@@ -299,6 +299,28 @@ a{color:var(--gold)}
 .toast svg{width:18px;height:18px;color:#1f9d4c;flex:none}
 .toast.err svg{color:var(--red)}
 
+/* Cupom */
+.cupom{margin-top:14px;padding:14px;border-radius:14px;background:var(--surface-2);border:1px dashed var(--line-2)}
+.cupom .lin{display:flex;gap:8px;align-items:stretch}
+.cupom input{flex:1;min-width:0;height:48px;padding:0 14px;border-radius:12px;background:#0f0f0f;border:1px solid var(--line-2);color:var(--text);font-family:var(--font-c);font-weight:700;font-size:18px;letter-spacing:2px;text-transform:uppercase}
+.cupom input::placeholder{letter-spacing:.6px;font-weight:600;color:#6d6860}
+.cupom input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,194,48,.18)}
+.cupom button{flex:0 0 auto;height:48px;padding:0 18px;border-radius:12px;border:0;background:var(--gold);color:#111;font-family:var(--font-c);font-weight:700;font-size:17px;letter-spacing:.6px;text-transform:uppercase}
+.cupom button[disabled]{opacity:.55;cursor:progress}
+.cupom .titulo{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-family:var(--font-c);font-weight:700;font-size:16px;letter-spacing:.7px;text-transform:uppercase;color:var(--cream)}
+.cupom .titulo svg{width:20px;height:20px;color:var(--gold)}
+.cupom .aviso{margin-top:8px;font-size:13.5px;color:#ff9095;display:none}
+.cupom .aviso.show{display:block}
+.cupom.ativo{border-style:solid;border-color:rgba(60,203,107,.5);background:rgba(60,203,107,.08)}
+.cupom .aplicado{display:none;align-items:center;gap:10px;flex-wrap:wrap}
+.cupom .aplicado svg{width:22px;height:22px;flex:none;color:#8ae8ab}
+.cupom .aplicado button{flex:none}
+.cupom.ativo .aplicado{display:flex}
+.cupom.ativo .lin,.cupom.ativo .aviso{display:none}
+.cupom .aplicado .cod{flex:1;font-family:var(--font-c);font-weight:700;font-size:19px;letter-spacing:1.4px;color:#8ae8ab}
+.cupom .aplicado .txt{flex:1 1 100%;min-width:0;font-size:13.5px;color:#cfe8d6;order:3}
+.cupom .aplicado button{background:transparent;border:1px solid var(--line-2);color:var(--muted);height:36px;padding:0 12px;font-size:14px}
+
 /* Convite para instalar o app */
 .install{position:fixed;left:0;right:0;top:calc(var(--top) + 8px);z-index:70;padding:0 12px;transform:translateY(-140%);transition:transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
 .install.show{transform:none;pointer-events:auto}
@@ -373,6 +395,7 @@ a{color:var(--gold)}
     <symbol id="i-card" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></g></symbol>
     <symbol id="i-ticket" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 0 4v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z" transform="translate(0 1)"/><path d="M14 6v12" stroke-dasharray="2 2"/></g></symbol>
     <symbol id="i-cash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></g></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 11.5V4a1 1 0 0 1 1-1h7.5l9 9-8.5 8.5-9-9Z"/><circle cx="7.5" cy="7.5" r="1.6" fill="currentColor" stroke="none"/></g></symbol>
     <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></g></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></g></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.2A9.7 9.7 0 0 0 3.7 16.9L2.4 21.6l4.9-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.6.3 2.7 2.7 0 0 0-.8 2c0 1.2.9 2.3 1 2.5.1.2 1.7 2.6 4.2 3.7 1.6.7 2.2.7 3 .6.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.4-.3Z"/></symbol>
@@ -420,7 +443,7 @@ a{color:var(--gold)}
     <div><strong style="color:var(--cream)">Dejapa Burguer</strong> · Hambúrgueres artesanais</div>
     <div style="margin-top:4px">Pedidos e delivery: <a id="waFoot" href="#" target="_blank" rel="noopener">(11) 98832-0261</a></div>
     <div style="margin-top:10px;font-size:12.5px">Preços sujeitos a alteração sem aviso prévio.</div>
-    <div class="assinatura">Desenvolvido por <strong>Yoshitake Consultoria de Tecnologia • (11) 94959-7214</strong></div>
+    <div class="assinatura">Desenvolvido por <strong>Yoshitake Consultoria de Tecnologia</strong></div>
   </footer>
 </main>
 
@@ -630,6 +653,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     { id: 'dinheiro', nome: 'Dinheiro', desc: 'Informe se precisa de troco' }
   ];
   var BAIRROS = [];
+  var CUPOM = null;          // { codigo, tipo, valor, desconto, freteGratis, descricao }
 
   var OPT = {
     extra: { id: 'extra', type: 'check', label: 'Adicional', title: 'Adicionar +1 burguer', hint: 'Burguer extra de 140g', price: 9.90, short: '+1 burguer extra' },
@@ -906,6 +930,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
    * CARRINHO
    * ===================================================================== */
   var cart = (store('dejapa.cart.v1') || []).filter(function (l) { return l && l.id && l.qty > 0; });
+  CUPOM = store('dejapa.cupom.v1') || null;
 
   function limparCarrinhoInvalido() {
     var antes = cart.length;
@@ -944,8 +969,14 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function saveCart() { store('dejapa.cart.v1', cart); renderCartState(); }
 
   function currentTipo() { var r = $('input[name="tipo"]:checked'); return r ? r.value : 'entrega'; }
+  function descontoCupom() {
+    if (!CUPOM) return 0;
+    var d = CUPOM.freteGratis ? 0 : Number(CUPOM.desconto) || 0;
+    return round2(Math.min(d, subtotal()));
+  }
   function taxa() {
     if (currentTipo() === 'retirada') return 0;
+    if (CUPOM && CUPOM.freteGratis) return 0;
     var b = bairroSelecionado();
     if (b.taxa !== null && b.taxa !== undefined) return b.taxa;
     return typeof CONFIG.taxaPadrao === 'number' ? CONFIG.taxaPadrao : 0;
@@ -958,11 +989,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
   function taxaLabel() {
     if (currentTipo() === 'retirada') return 'Grátis';
+    if (CUPOM && CUPOM.freteGratis) return 'Grátis pelo cupom';
     if (!taxaDefinida()) return 'A confirmar';
     var t = taxa();
     return t ? money(t) : 'Grátis';
   }
-  function total() { return round2(subtotal() + taxa()); }
+  function total() { return round2(Math.max(0, subtotal() - descontoCupom() + taxa())); }
 
   function renderCartState() {
     var n = count();
@@ -999,11 +1031,63 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         '<output class="tnum">' + l.qty + '</output><button type="button" data-inc="' + i + '" aria-label="Aumentar">' + icon('i-plus') + '</button></div>' +
         '<button class="link" type="button" data-rm="' + i + '">Remover</button></div></div>';
     }).join('') +
+      caixaCupom() +
       '<div class="totals"><div><span>Subtotal</span><span>' + money(subtotal()) + '</span></div>' +
+      (descontoCupom() ? '<div><span>Desconto (' + esc(CUPOM.codigo) + ')</span><span style="color:#8ae8ab">- ' + money(descontoCupom()) + '</span></div>' : '') +
       '<div><span>' + (currentTipo() === 'retirada' ? 'Retirada' : 'Taxa de entrega') + '</span><span>' + taxaLabel() + '</span></div>' +
       '<div class="grand"><span>Total</span><span>' + money(total()) + '</span></div></div>' +
       '<div class="btn-row" style="margin-top:12px"><button class="link" type="button" data-close>+ Adicionar mais itens</button><button class="link" type="button" id="clearCart">Esvaziar carrinho</button></div>';
     $('#cartFootTotal').textContent = money(total());
+  }
+
+  function caixaCupom() {
+    if (!API_URL) return '';
+    if (CUPOM) {
+      return '<div class="cupom ativo"><div class="aplicado">' + icon('i-tag') +
+        '<span class="cod">' + esc(CUPOM.codigo) + '</span>' +
+        '<span class="txt">' + esc(CUPOM.descricao || (CUPOM.freteGratis ? 'Entrega grátis' : 'Desconto aplicado')) + '</span>' +
+        '<button type="button" id="tirarCupom">Remover</button></div></div>';
+    }
+    return '<div class="cupom"><div class="titulo">' + icon('i-tag') + 'Tem um cupom?</div>' +
+      '<div class="lin"><input id="campoCupom" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Digite o código" aria-label="Código do cupom">' +
+      '<button type="button" id="usarCupom">Aplicar</button></div>' +
+      '<div class="aviso" id="avisoCupom"></div></div>';
+  }
+
+  function aplicarCupom(codigo) {
+    var campo = $('#campoCupom'), botao = $('#usarCupom'), aviso = $('#avisoCupom');
+    var cod = String(codigo || (campo && campo.value) || '').trim().toUpperCase();
+    if (!cod) { if (campo) campo.focus(); return; }
+    if (botao) { botao.disabled = true; botao.textContent = 'Conferindo…'; }
+    if (aviso) aviso.classList.remove('show');
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'cupom', codigo: cod, subtotal: subtotal() }),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    }).then(function (r) { return r.json(); }).then(function (r) {
+      if (botao) { botao.disabled = false; botao.textContent = 'Aplicar'; }
+      if (!r || !r.ok) {
+        var a = $('#avisoCupom');
+        if (a) { a.textContent = (r && r.erro) || 'Não consegui validar o cupom agora.'; a.classList.add('show'); }
+        return;
+      }
+      CUPOM = r.cupom;
+      store('dejapa.cupom.v1', CUPOM);
+      toast('Cupom ' + CUPOM.codigo + ' aplicado');
+      renderCart();
+      if (isOpen('sheetCheckout')) refreshCheckout();
+    }).catch(function () {
+      if (botao) { botao.disabled = false; botao.textContent = 'Aplicar'; }
+      var a = $('#avisoCupom');
+      if (a) { a.textContent = 'Sem conexão para validar o cupom.'; a.classList.add('show'); }
+    });
+  }
+
+  function tirarCupom() {
+    CUPOM = null;
+    store('dejapa.cupom.v1', null);
+    renderCart();
+    if (isOpen('sheetCheckout')) refreshCheckout();
   }
 
   $('#cartBody').addEventListener('click', function (e) {
@@ -1015,7 +1099,13 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       saveCart();
     } else if (b.hasAttribute('data-rm')) {
       var j = +b.getAttribute('data-rm'), nome = PRODUCTS[cart[j].id].name; cart.splice(j, 1); saveCart(); toast(nome + ' removido');
-    } else if (b.id === 'clearCart') { cart = []; saveCart(); toast('Carrinho esvaziado'); }
+    } else if (b.id === 'clearCart') { cart = []; CUPOM = null; store('dejapa.cupom.v1', null); saveCart(); toast('Carrinho esvaziado'); }
+    else if (b.id === 'usarCupom') { aplicarCupom(); }
+    else if (b.id === 'tirarCupom') { tirarCupom(); }
+  });
+
+  $('#cartBody').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.id === 'campoCupom') { e.preventDefault(); aplicarCupom(); }
   });
 
   /* =====================================================================
@@ -1212,6 +1302,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     }).join('');
     $('#coTotals').innerHTML = '<div class="summary-mini"><ul>' + rows + '</ul></div>' +
       '<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span>Subtotal</span><span>' + money(subtotal()) + '</span></div>' +
+      (descontoCupom() ? '<div><span>Cupom ' + esc(CUPOM.codigo) + '</span><span style="color:#8ae8ab">- ' + money(descontoCupom()) + '</span></div>' : '') +
       '<div><span>' + (tipo === 'retirada' ? 'Retirada' : 'Taxa de entrega') + '</span><span>' + taxaLabel() + '</span></div>' +
       '<div class="grand"><span>Total</span><span>' + money(t) + '</span></div>';
     $('#coFootTotal').textContent = money(t);
@@ -1346,6 +1437,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     });
     L.push('');
     L.push('Subtotal: ' + money(subtotal()));
+    if (CUPOM) L.push('Cupom ' + CUPOM.codigo + ': ' + (CUPOM.freteGratis ? 'entrega grátis' : '- ' + money(descontoCupom())));
     L.push((tipo === 'retirada' ? 'Retirada: ' : 'Taxa de entrega: ') + taxaLabel().toLowerCase());
     L.push('*TOTAL: ' + money(t) + '*');
     L.push('');
@@ -1374,6 +1466,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         endereco: tipo === 'entrega' ? e.linha1 + (e.ref ? ' (ref: ' + e.ref + ')' : '') : 'Retirada no balcão',
         bairro: e.bairro, taxa: taxa(), itens: itensTexto(' + '),
         subtotal: subtotal(), total: total(),
+        cupom: CUPOM ? CUPOM.codigo : '', desconto: descontoCupom(),
         pagamento: textoPagamento().curto, detalhe: textoPagamento().detalhe,
         observacoes: el.obs.value.trim()
       }
@@ -1426,6 +1519,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       '<button class="btn btn-ghost" type="button" id="newOrder">Fazer novo pedido</button></div>';
 
     cart = []; store('dejapa.cart.v1', cart);
+    CUPOM = null; store('dejapa.cupom.v1', null);
     orderId = null; lastPix = { amount: -1, code: '' };
     el.obs.value = ''; $('#pixBox').innerHTML = '';
 
