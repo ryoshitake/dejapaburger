@@ -509,7 +509,14 @@ td.acao{width:44px}
   }
 
   function statusDe(p) {
-    var s = String(p.status || 'Novo').trim();
+    var s = String(p.status == null ? '' : p.status).trim();
+    // Planilhas antigas guardaram o status numa coluna com outro nome.
+    if (!s) {
+      for (var k in p) {
+        var t = String(p[k] == null ? '' : p[k]).trim();
+        if (/^(novo|em preparo|feito|cancelado)$/i.test(t)) { s = t; break; }
+      }
+    }
     return s || 'Novo';
   }
   function classeStatus(s) {
@@ -588,7 +595,13 @@ td.acao{width:44px}
     if (novo === 'Cancelado' && !confirm('Cancelar o pedido #' + codigo + '?')) return;
     Array.prototype.forEach.call(b.parentNode.querySelectorAll('button'), function (x) { x.disabled = true; });
     api({ action: 'status', token: token, codigo: codigo, status: novo }).then(function (r) {
-      if (!r.ok) { msg(r.erro || 'Não consegui mudar o status', true); pintarPedidos(); return; }
+      if (!r.ok) {
+        var erro = r.erro || 'Não consegui mudar o status';
+        if (/ação desconhecida/i.test(erro)) erro = 'A planilha está com a versão antiga do script. Publique a nova versão.';
+        if (/coluna status/i.test(erro)) erro = 'Falta a coluna "status" na aba Pedidos. Rode "repararPedidos" no Apps Script.';
+        if (/permiss/i.test(erro)) erro = 'Sessão expirada. Entre de novo com o PIN.';
+        msg(erro, true); pintarPedidos(); return;
+      }
       PEDIDOS.forEach(function (p) { if (String(p.codigo) === String(codigo)) p.status = novo; });
       msg('Pedido #' + codigo + ' → ' + novo + '.');
       pintarPedidos();
