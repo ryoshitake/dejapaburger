@@ -469,9 +469,10 @@ td.acao{width:44px}
       marcarSujo(false);
       msg('Salvo na planilha: ' + abaAtual + ' (' + r.linhas + ' linhas).');
       var c = lerCache();
+      if (r.abas) dados = r.abas;                          // a API já devolveu o estado novo
       guardarCache(dados, c && c.horario);
       render();
-      setTimeout(function () { carregar(true); }, 1500);   // confere em segundo plano
+      if (!r.abas) setTimeout(function () { carregar(true); }, 1500);   // API antiga: confere depois
     }).catch(function () {
       b.disabled = false; $('#barraTxt').textContent = 'Alterações não salvas';
       msg('Erro de conexão ao salvar.', true);
