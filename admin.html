@@ -298,7 +298,17 @@ td.acao{width:44px}
     return '<input ' + attr + ' value="' + esc(v) + '">';
   }
   function hora(v) {
-    var s = String(v);
+    var s = String(v == null ? '' : v);
+    // O Sheets guarda hora como data (30/12/1899). Ao virar texto, chega em UTC:
+    // como o fuso de SP em 1899 era -03:06, 18:00 vira 21:06. Converte de volta.
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+      var d = new Date(s);
+      if (!isNaN(d)) {
+        try {
+          return d.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
+        } catch (e) { /* segue para o formato simples */ }
+      }
+    }
     var m = s.match(/(\d{1,2}):(\d{2})/);
     return m ? ('0' + m[1]).slice(-2) + ':' + m[2] : s;
   }
