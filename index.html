@@ -1068,7 +1068,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (botao) { botao.disabled = false; botao.textContent = 'Aplicar'; }
       if (!r || !r.ok) {
         var a = $('#avisoCupom');
-        if (a) { a.textContent = (r && r.erro) || 'Não consegui validar o cupom agora.'; a.classList.add('show'); }
+        var texto = (r && r.erro) || 'Não consegui validar o cupom agora.';
+        if (/ação desconhecida/i.test(texto)) texto = 'Os cupons ainda não foram ativados na loja.';
+        if (a) { a.textContent = texto; a.classList.add('show'); }
         return;
       }
       CUPOM = r.cupom;
