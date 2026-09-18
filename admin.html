@@ -73,27 +73,46 @@ td.acao{width:44px}
 .msg.ok{background:rgba(60,203,107,.12);border:1px solid rgba(60,203,107,.4);color:#8ae8ab}
 .msg.err{background:rgba(217,22,28,.14);border:1px solid rgba(217,22,28,.45);color:#ff9095}
 .hint{color:var(--muted);font-size:13px;margin:10px 2px}
-.cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));padding:14px}
-.ped{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:2px}
-.ped b{color:var(--gold)}
-.ped .tot{font-weight:700;font-size:15.5px;color:var(--cream);white-space:nowrap}
-.ped small{display:block;color:var(--muted);margin-top:4px;font-size:13px}
-.ped.novo{border-color:rgba(242,194,48,.5);box-shadow:0 0 0 1px rgba(242,194,48,.18)}
-.ped.feito{opacity:.62}
-.ped .topo{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ped .topo .sp{flex:1}
-.selo{font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.lista{width:100%;border-collapse:collapse;min-width:900px}
+.lista th{position:sticky;top:0;z-index:1}
+.lista td{vertical-align:top;font-size:13.5px;color:#d9d4cb}
+.lista tr.novo{background:rgba(242,194,48,.05)}
+.lista tr.novo td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
+.lista tr.preparo td:first-child{box-shadow:inset 3px 0 0 #ff913c}
+.lista tr.feito{color:var(--muted);opacity:.75}
+.lista tr.cancelado{opacity:.6}
+.lista .cod{font-weight:700;color:var(--gold);white-space:nowrap}
+.lista .quando{display:block;white-space:nowrap;color:var(--muted);font-size:12.5px;margin-top:2px}
+.lista .cli{min-width:150px}
+.lista .cli small{display:block;color:var(--muted);font-size:12.5px}
+.lista .itens{max-width:340px;min-width:200px;line-height:1.35}
+.lista .pag{max-width:180px}
+.lista .val{text-align:right;font-weight:700;color:var(--cream);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lista .obs{color:#ffd489;font-size:12.5px;display:block;margin-top:3px}
+.selo{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-radius:999px;padding:3px 8px;white-space:nowrap}
 .selo.novo{background:rgba(242,194,48,.14);border:1px solid rgba(242,194,48,.5);color:var(--gold)}
 .selo.preparo{background:rgba(255,145,60,.14);border:1px solid rgba(255,145,60,.5);color:#ffab5e}
 .selo.feito{background:rgba(60,203,107,.12);border:1px solid rgba(60,203,107,.45);color:#8ae8ab}
 .selo.cancelado{background:rgba(217,22,28,.14);border:1px solid rgba(217,22,28,.45);color:#ff9095}
-.acoes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-2)}
-.acoes button,.acoes a{flex:1;min-width:104px;height:34px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface-3);color:var(--text);font-weight:600;font-size:13px;text-decoration:none;transition:background .15s,border-color .15s}
+.acoes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;min-width:210px}
+.acoes button,.acoes a{height:32px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface-3);color:var(--text);font-weight:600;font-size:12.5px;white-space:nowrap;text-decoration:none}
 .acoes button:hover{border-color:var(--gold)}
 .acoes .ok{background:rgba(60,203,107,.14);border-color:rgba(60,203,107,.45);color:#8ae8ab}
-.acoes .ok:hover{background:rgba(60,203,107,.22)}
-.acoes .zap{background:rgba(60,203,107,.10);border-color:rgba(60,203,107,.3);color:#8ae8ab;flex:0 0 46px;min-width:46px}
+.acoes .zap{background:rgba(60,203,107,.10);border-color:rgba(60,203,107,.3);color:#8ae8ab;padding:0 9px}
 .acoes button[disabled]{opacity:.5;cursor:progress}
+@media (max-width:760px){
+  .lista{min-width:0;display:block}
+  .lista thead{display:none}
+  .lista tbody,.lista tr,.lista td{display:block;width:100%}
+  .lista tr{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);margin:10px 0;padding:10px 12px}
+  .lista tr.novo{border-color:rgba(242,194,48,.5)}
+  .lista td{border:0;padding:3px 0}
+  .lista td:first-child{box-shadow:none!important}
+  .lista td[data-rot]::before{content:attr(data-rot) ": ";color:var(--muted);font-size:12px}
+  .lista .val{text-align:left}
+  .acoes{justify-content:flex-start;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line-2)}
+  .acoes button,.acoes a{flex:1;min-width:100px}
+}
 .filtros{display:flex;gap:6px;flex-wrap:wrap}
 .filtros button{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--muted);font-weight:600;font-size:13px}
 .filtros button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#111}
@@ -376,7 +395,7 @@ td.acao{width:44px}
       '<button type="button" data-f="pendentes" aria-pressed="' + (filtro === 'pendentes') + '">Em aberto</button>' +
       '<button type="button" data-f="todos" aria-pressed="' + (filtro === 'todos') + '">Todos</button>' +
       '</div><button class="btn btn-ghost" id="attPed">Atualizar</button></div>' +
-      '<div class="cards" id="pedList"><p class="hint">Carregando…</p></div></div>';
+      '<div id="pedList"><p class="hint" style="padding:14px">Carregando…</p></div></div>';
     apiGet('action=pedidos&limite=80&token=' + encodeURIComponent(token)).then(function (r) {
       if (!r.ok) { document.getElementById('pedList').innerHTML = '<p class="hint">' + esc(r.erro || 'erro') + '</p>'; return; }
       PEDIDOS = r.pedidos || [];
@@ -400,35 +419,41 @@ td.acao{width:44px}
 
   function pintarPedidos() {
     var box = document.getElementById('pedList');
-    var abertos = PEDIDOS.filter(function (p) { return classeStatus(statusDe(p)) === 'novo' || classeStatus(statusDe(p)) === 'preparo'; });
+    var aberto = function (p) { var c = classeStatus(statusDe(p)); return c === 'novo' || c === 'preparo'; };
+    var abertos = PEDIDOS.filter(aberto);
     var lista = filtro === 'pendentes' ? abertos : PEDIDOS;
     var resumo = document.getElementById('pedResumo');
     if (resumo) resumo.textContent = abertos.length + ' em aberto · ' + PEDIDOS.length + ' no total';
 
     if (!lista.length) {
-      box.innerHTML = '<p class="hint">' + (filtro === 'pendentes' ? 'Nenhum pedido em aberto. Tudo entregue!' : 'Nenhum pedido registrado ainda.') + '</p>';
+      box.innerHTML = '<p class="hint" style="padding:14px">' + (filtro === 'pendentes' ? 'Nenhum pedido em aberto. Tudo entregue!' : 'Nenhum pedido registrado ainda.') + '</p>';
       return;
     }
-    box.innerHTML = lista.map(function (p) {
-      var st = statusDe(p), cls = classeStatus(st), prox = FLUXO[st];
-      var zap = String(p.telefone || '').replace(/\D/g, '');
-      if (zap.length === 10 || zap.length === 11) zap = '55' + zap;
-      return '<div class="ped ' + cls + '" data-codigo="' + esc(p.codigo) + '">' +
-        '<div class="topo"><b>#' + esc(p.codigo) + '</b><span class="selo ' + cls + '">' + esc(st) + '</span>' +
-        '<span class="sp"></span><span class="tot">' + esc(brl(p.total)) + '</span></div>' +
-        '<small>' + esc(dataHora(p.data)) + '</small>' +
-        '<small>' + esc(p.cliente) + ' · ' + esc(p.telefone) + '</small>' +
-        '<small>' + esc(p.tipo) + (p.bairro ? ' · ' + esc(p.bairro) : '') + (p.endereco ? ' · ' + esc(p.endereco) : '') + '</small>' +
-        '<small>' + esc(p.itens) + '</small>' +
-        '<small>' + esc(p.detalhe) + '</small>' +
-        (p.observacoes ? '<small>Obs.: ' + esc(p.observacoes) + '</small>' : '') +
-        '<div class="acoes">' +
-        (prox ? '<button type="button" class="ok" data-status="' + esc(prox) + '" data-cod="' + esc(p.codigo) + '">' + (prox === 'Feito' ? '✓ Marcar como feito' : '▶ Em preparo') + '</button>' : '') +
-        (cls === 'feito' || cls === 'cancelado' ? '<button type="button" data-status="Novo" data-cod="' + esc(p.codigo) + '">↺ Reabrir</button>' : '') +
-        (cls !== 'cancelado' && cls !== 'feito' ? '<button type="button" data-status="Cancelado" data-cod="' + esc(p.codigo) + '">Cancelar</button>' : '') +
-        (zap ? '<a class="zap" href="https://wa.me/' + zap + '" target="_blank" rel="noopener" title="Falar com o cliente">💬</a>' : '') +
-        '</div></div>';
-    }).join('');
+    box.innerHTML = '<div class="scroll"><table class="lista"><thead><tr>' +
+      '<th>Pedido</th><th>Cliente</th><th>Entrega</th><th>Itens</th><th>Pagamento</th><th style="text-align:right">Total</th><th>Status</th><th style="text-align:right">Ações</th>' +
+      '</tr></thead><tbody>' +
+      lista.map(function (p) {
+        var st = statusDe(p), cls = classeStatus(st), prox = FLUXO[st];
+        var zap = String(p.telefone || '').replace(/\D/g, '');
+        if (zap.length === 10 || zap.length === 11) zap = '55' + zap;
+        var entrega = String(p.tipo || '') === 'retirada'
+          ? 'Retirada no balcão'
+          : [p.bairro, p.endereco].filter(Boolean).map(esc).join('<br>');
+        return '<tr class="' + cls + '" data-codigo="' + esc(p.codigo) + '">' +
+          '<td><span class="cod">#' + esc(p.codigo) + '</span><span class="quando">' + esc(dataHora(p.data)) + '</span></td>' +
+          '<td class="cli" data-rot="Cliente">' + esc(p.cliente) + '<small>' + esc(p.telefone) + '</small></td>' +
+          '<td data-rot="Entrega">' + entrega + '</td>' +
+          '<td class="itens" data-rot="Itens">' + esc(p.itens) + (p.observacoes ? '<span class="obs">Obs.: ' + esc(p.observacoes) + '</span>' : '') + '</td>' +
+          '<td class="pag" data-rot="Pagamento">' + esc(p.detalhe || p.pagamento) + '</td>' +
+          '<td class="val" data-rot="Total">' + esc(brl(p.total)) + '</td>' +
+          '<td data-rot="Status"><span class="selo ' + cls + '">' + esc(st) + '</span></td>' +
+          '<td><div class="acoes">' +
+          (prox ? '<button type="button" class="ok" data-status="' + esc(prox) + '" data-cod="' + esc(p.codigo) + '">' + (prox === 'Feito' ? '✓ Feito' : '▶ Preparo') + '</button>' : '') +
+          (cls === 'feito' || cls === 'cancelado' ? '<button type="button" data-status="Novo" data-cod="' + esc(p.codigo) + '">↺ Reabrir</button>' : '') +
+          (cls !== 'cancelado' && cls !== 'feito' ? '<button type="button" data-status="Cancelado" data-cod="' + esc(p.codigo) + '">Cancelar</button>' : '') +
+          (zap ? '<a class="zap" href="https://wa.me/' + zap + '" target="_blank" rel="noopener" title="Falar com o cliente">💬</a>' : '') +
+          '</div></td></tr>';
+      }).join('') + '</tbody></table></div>';
   }
 
   function dataHora(v) {
